@@ -18,7 +18,7 @@ def bin_and_average(x, time, n_bins=20):
     return out
 
 def get_dtw(adata, gene, genetime=False, 
-            timekey = 'velo_s_pseudotime_', n_bins=20):
+            timekey = 'velo_s_pseudotime', n_bins=20):
     
     if genetime:
         time = adata[:, gene].layers[timekey].ravel()
@@ -58,7 +58,7 @@ def get_dtw(adata, gene, genetime=False,
     return(time_pad, c_pad, u_pad, s_pad, path_c_s, path_u_s, time_lag_c_s, time_lag_u_s)
 
 
-def plot_dtw(adata, gene, genetime=False, timekey = 'velo_s_pseudotime_', n_bins=20,
+def plot_dtw(adata, gene, genetime=False, timekey = 'velo_s_pseudotime', n_bins=20,
          figsave=None):
     time_pad, c_pad, u_pad, s_pad, path_c_s, path_u_s, time_lag_c_s, time_lag_u_s = get_dtw(adata, gene, genetime, timekey, n_bins)
 
