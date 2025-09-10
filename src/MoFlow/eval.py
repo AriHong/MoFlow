@@ -3,6 +3,7 @@ Evaluation utility functions.
 The original releas can be found here:https://github.com/qiaochen/VeloAE/
 """
 import numpy as np
+import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -166,7 +167,6 @@ def cross_boundary_correctness(adata,
     scores = {}
     all_scores = {}
     
-    
     if x_emb == "X_umap":
         v_emb = adata.obsm['{}_umap'.format(k_velocity)]
     else:
@@ -272,7 +272,8 @@ def evaluate(adata, cluster_edges, k_cluster, k_velocity, x_emb="X_umap", verbos
         "In-cluster Confidence": ic_scvelo_coh
        }
 
-def get_genescore(adata, nz_threshold=0.1, w_threshold=90):
+def get_genescore(adata, nz_threshold=0.1, w_threshold=90, get_model=False,
+                 scorenorm=True):
     model = np.zeros(adata.n_vars).astype(str)
     on_ = np.zeros(adata.n_vars)
     off_ = np.zeros(adata.n_vars)
@@ -305,13 +306,30 @@ def get_genescore(adata, nz_threshold=0.1, w_threshold=90):
         m1_[i] = np.mean((vc[ww]<0)&(vu[ww]>0))
         m2_[i] = np.mean((vc[ww]>0)&(vu[ww]<0))
 
+        if (np.mean(vu[ww]>0) > .7) & (np.mean(vs[ww]>0) >.7):
+            model[i] = 'on'
+        elif (np.mean(vu[ww]<0) > 0.8) & (np.mean(vs[ww]<0)>.8):
+            model[i] = 'off'
+        else:
+            if np.mean(vc[ww]>0) > 0.5:
+                model[i] = 'm2'
+            else:
+                model[i] = 'm1'
+
 
     model_df = pd.DataFrame({'on': on_, 'off': off_,
                          'm1': m1_, 'm2': m2_,},
                         index=adata.var_names)
+    if scorenorm:
+        scoresum = model_df['m1']+model_df['m2']
+        model_df['m1'] /=scoresum
+        model_df['m2'] /=scoresum
+    
+    if get_model:
+        model_df['model'] = model
 
-    model_df['m1'] = model_df['m1']/(model_df['m1'] + model_df['m2'])
-    model_df['m2'] = model_df['m2']/(model_df['m1'] + model_df['m2'])
+    
+        
     
     return model_df
     
