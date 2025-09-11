@@ -27,23 +27,6 @@ Also, the repository includes notebooks under `notebooks/` for reproducing figur
 
 ---
 
-## Computing Scores
-
-MoFlow outputs velocity predictions that can be post-processed into regulatory scores.  
-We provide helper functions in `src/scores.py`:
-
-```python
-from moflow.scores import compute_m1_m2, compute_rna_on_off
-
-m1, m2 = compute_m1_m2(moflow_output)
-rna_on, rna_off = compute_rna_on_off(moflow_output)
-```
-
-- **m1 / m2 scores**: capture discordance between chromatin accessibility and RNA activity.  
-- **RNA-on / RNA-off scores**: capture coordinated transcriptional induction or repression.
-
----
-
 ## Acknowledgements
 
 Portions of this code are adapted from the **cellDancer** repository:  
