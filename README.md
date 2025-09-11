@@ -34,14 +34,5 @@ Portions of this code are adapted from the **cellDancer** repository:
 
 We thank the authors of cellDancer and MultiVelo for making their work publicly available.
 
----
-
-## Citation
-
-If you use MoFlow in your research, please cite:
-
-```
-Hong et al. Multi-omic relay velocity modeling uncovers dynamic chromatin–transcription regulation across cell states. 
-```
 
 
