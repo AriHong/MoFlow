@@ -6,8 +6,18 @@ By leveraging gene- and cell-specific kinetic parameters, MoFlow can jointly mod
 ---
 
 ## Installation
+MoFlow can be easily installed from PyPI or directly from the source.
 
-Clone the repository and set up a conda environment:
+### Option 1: Install from PyPI
+You can install the latest release of MoFlow directly from PyPI using `pip`
+```bash
+conda create -n moflow python=3.7.0
+conda activate moflow
+pip install moflow
+```
+
+### Option 2: Install from Source
+Alternatively, you can clone the repository and set up a local development environment:
 
 ```bash
 git clone https://github.com/AriHong/MoFlow.git
