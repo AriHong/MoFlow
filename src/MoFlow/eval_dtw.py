@@ -19,6 +19,37 @@ def bin_and_average(x, time, n_bins=20):
 
 def get_dtw(adata, gene, genetime=False, 
             timekey = 'velo_s_pseudotime', n_bins=20):
+    """DTW analysis
+        
+    Parameters
+    ---------
+    adata: `anndata.AnnData`
+        anndata that contains the chromatin accessibility, unspliced abundance, spliced abundance, embedding space, and pseudotime information. 
+    gene_time: optional, `bool` (default: False)
+        `True` if use gene specific time. `False` if use global time.
+    time_key: optional, `str` (default: velo_s_pseudotime)
+        obs or layer key to annotate pseudotime.
+    n_bins: optional, `int` (default: 20)
+        the number of bin to discritize time
+    Returns
+    -------
+    time_pad: `numpy.ndarray`
+        A linearly spaced array representing the padded time points after dynamic time warping (DTW).
+    c_pad: `numpy.ndarray`
+        Padded and smoothed chromatin accessibility values for the gene over time.
+    u_pad: `numpy.ndarray`
+        Padded and smoothed unspliced abundance values for the gene over time.
+    s_pad: `numpy.ndarray`
+        Padded and smoothed spliced abundance values for the gene over time.
+    path_c_s: `list of tuples`
+        The optimal alignment path (DTW path) between chromatin accessibility (c_pad) and spliced abundance (s_pad).
+    path_u_s: `list of tuples`
+        The optimal alignment path (DTW path) between unspliced abundance (u_pad) and spliced abundance (s_pad).
+    time_lag_c_s: `list of float`
+        The time lags between the aligned chromatin accessibility and spliced abundance based on the DTW path.
+    time_lag_u_s: `list of float`
+        The time lags between the aligned unspliced abundance and spliced abundance based on the DTW path.
+        """
     
     if genetime:
         time = adata[:, gene].layers[timekey].ravel()
@@ -60,6 +91,36 @@ def get_dtw(adata, gene, genetime=False,
 
 def plot_dtw(adata, gene, genetime=False, timekey = 'velo_s_pseudotime', n_bins=20,
          figsave=None):
+    ):
+    """
+    Plot the DTW alignment of chromatin accessibility, unspliced, and spliced abundance profiles over time 
+    along with the corresponding time lags.
+
+    Parameters
+    ----------
+    adata : `anndata.AnnData`
+        Annotated data object containing the chromatin accessibility, unspliced and spliced abundance,
+        embedding space, and pseudotime information.
+    
+    gene : `str`
+        The gene name to plot the DTW alignment for.
+    
+    genetime : `bool`, optional (default: False)
+        If `True`, use gene-specific time values. If `False`, use the global pseudotime.
+    
+    timekey : `str`, optional (default: 'velo_s_pseudotime')
+        The key in `adata.obs` or `adata.layers` that stores the pseudotime information.
+    
+    n_bins : `int`, optional (default: 20)
+        The number of bins to discretize the time values for averaging.
+    
+    figsave : `str` or `None`, optional (default: None)
+        If provided, the figure will be saved to the specified file path. If `None`, the figure will not be saved.
+
+    Returns
+    -------
+    None
+    """
     time_pad, c_pad, u_pad, s_pad, path_c_s, path_u_s, time_lag_c_s, time_lag_u_s = get_dtw(adata, gene, genetime, timekey, n_bins)
 
     fig, axs = plt.subplots(2, 1, figsize=(4.8, 3.2), sharex=True)

@@ -630,6 +630,75 @@ def violinplot(adata,
                  figsize=None,
                  type='violin',
                  **kwargs):
+    """
+    Create violin plots (or box plots) for a list of genes, grouped by a categorical variable (e.g., cell type).
+
+    This function generates individual plots for each gene in the given `gene_list`, showing the distribution of 
+    a specific layer (e.g., spliced, unspliced) across different groups (e.g., cell types). The plots can be customized 
+    as violin plots or box plots. The function allows flexibility in color schemes, axis visibility, and layout.
+
+    Parameters
+    ----------
+    adata : `anndata.AnnData`
+        Annotated data object containing the gene expression data. The gene expression data should be in the layers 
+        of the object (e.g., 'alpha', 'Ms', etc.), and cell labels should be available in `adata.obs`.
+
+    gene_list : `list of str`
+        A list of gene names to generate plots for. The function will only plot the genes that are present in 
+        `adata.var_names`.
+
+    by : `str`, optional (default: 'alpha')
+        The key in the `adata.layers` where the gene expression data is stored (e.g., 'alpha', 'Ms', 'Mu'). 
+
+    color_by : `str`, optional (default: 'celltype')
+        The key in `adata.obs` for grouping the cells (e.g., 'celltype', 'cluster'). This is used for coloring the 
+        plot based on the categorical variable.
+
+    colors : `dict` or `None`, optional (default: None)
+        A dictionary mapping categories to specific colors. If not provided, the function will attempt to use the 
+        colors stored in `adata.uns` for the `color_by` variable.
+
+    axis_on : `bool`, optional (default: True)
+        If `False`, the axis labels and ticks will be hidden. If `True`, they will be displayed.
+
+    frame_on : `bool`, optional (default: True)
+        If `False`, the box/violin frame will not be shown.
+
+    n_cols : `int`, optional (default: 5)
+        The number of columns to arrange the plots in. If the number of genes is smaller than `n_cols`, the number of 
+        columns will be adjusted automatically.
+
+    figsize : `tuple`, optional (default: None)
+        The size of the figure. If not provided, the figure size will be automatically adjusted based on the number of 
+        columns and rows.
+
+    type : `str`, optional (default: 'violin')
+        The type of plot to generate. Can be either 'violin' or 'box'. 'violin' will produce violin plots, while 'box' 
+        will produce box plots.
+
+    **kwargs : keyword arguments
+        Additional arguments passed to `sns.violinplot()` or `sns.boxplot()`. These can be used for further customization 
+        of the plots.
+
+    Returns
+    -------
+    fig : `matplotlib.figure.Figure`
+        The figure object containing the generated plots.
+
+    axs : `matplotlib.axes.Axes`
+        The axes of the subplots.
+
+    Notes
+    -----
+    - The number of rows and columns in the subplot grid is adjusted based on the number of genes in `gene_list`.
+    - The plots are grouped by the `color_by` variable, and each group is assigned a different color, as specified by 
+      the `colors` parameter or the color scheme available in `adata.uns`.
+
+    Examples
+    --------
+    # Example usage:
+    violinplot(adata, gene_list=['GeneA', 'GeneB'], by='alpha', color_by='celltype', n_cols=4)
+    """
     
     gene_list = np.array(gene_list)
     missing_genes = gene_list[~np.isin(gene_list, adata.var_names)]
@@ -673,18 +742,18 @@ def violinplot(adata,
         df['cluster'] = adata.obs[color_by]
         if type == 'violin':
             if colors is None:
-                sns.violinplot(df, x='cluster', y=by,
-                           palette=colors, ax=ax, **kwargs)
+                sns.violinplot(data=df, x='cluster', y=by,
+                           palette=colors, ax=ax, scale='width', **kwargs)
             else:
-                sns.violinplot(df, x='cluster', y=by,
-                           palette=colors, ax=ax, **kwargs)
+                sns.violinplot(data=df, x='cluster', y=by,
+                           palette=colors, ax=ax, scale='width',**kwargs)
         elif type == 'box':
             if colors is None:
-                sns.boxplot(df, x='cluster', y=by,
-                           palette=colors, ax=ax)
+                sns.boxplot(data=df, x='cluster', y=by,
+                           palette=colors, ax=ax, **kwargs)
             else:
-                sns.boxplot(df, x='cluster', y=by,
-                           palette=colors, ax=ax)
+                sns.boxplot(data=df, x='cluster', y=by,
+                           palette=colors, ax=ax, **kwargs)
         ax.set_title(gene)
         if not axis_on:
             ax.xaxis.set_ticks_position('none')
@@ -695,4 +764,5 @@ def violinplot(adata,
     fig.tight_layout()
     return fig, axs
         
-        
+
+
